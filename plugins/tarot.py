@@ -6,19 +6,22 @@ class Deck(object):
     __major = []
     __minor = []
 
-    def __init__(self, shuffled=False, imageset=None, keywords=None):
+    def __init__(self, shuffled=False, imageset=None, backimage=None, keywords=None):
         if not imageset:
             imageset = images.open_tarot_waite()
+
+        if not backimage:
+            backimage = images.back()
 
         if not keywords:
             keywords = data.load_keywords()
 
         self.__major = [
-            MajorArcana(n, en, jp, inverted=shuffled and data.true_or_false(),imageset=imageset, keywords=keywords[str(n)])
+            MajorArcana(n, en, jp, inverted=shuffled and data.true_or_false(),imageset=imageset, backimage=backimage, keywords=keywords[str(n)])
             for n, en, jp in MajorArcana.define()
         ]
         self.__minor = [
-            MinorArcana(s, n, inverted=shuffled and data.true_or_false(), imageset=imageset)
+            MinorArcana(s, n, inverted=shuffled and data.true_or_false(), imageset=imageset, backimage=backimage)
             for s, n in MinorArcana.define()
         ]
         if shuffled:
@@ -43,12 +46,13 @@ class Deck(object):
 
 class MajorArcana(object):
     __image    = None
+    __back     = None
     __name     = None
     __number   = None
     __inverted = False
     __keywords = None
 
-    def __init__(self, number, name, japanese_name=None, inverted=False, imageset=None, keywords=None):
+    def __init__(self, number, name, japanese_name=None, inverted=False, imageset=None, backimage=None, keywords=None):
         self.__number   = number
         self.__name     = {"en":name, "jp":japanese_name}
         self.__inverted = inverted
@@ -56,6 +60,7 @@ class MajorArcana(object):
         w, h = 85, 140
         x, y = self.__number % 11 * w, self.__number // 11 * h
         self.__image = imageset.crop((x, y, x+w, y+h)).rotate(180) if inverted else imageset.crop((x, y, x+w, y+h))
+        self.__back  = backimage
 
         self.__keywords = keywords
 
@@ -74,6 +79,10 @@ class MajorArcana(object):
     @property
     def image(self):
         return self.__image
+
+    @property
+    def back(self):
+        return self.__back
 
     @property
     def info(self):
@@ -115,12 +124,13 @@ class MajorArcana(object):
 class MinorArcana(object):
     __size     = (85, 140)
     __image    = None
+    __back     = None
     __suit   = None
     __name = None
     __number = None
     __inverted = False
 
-    def __init__(self, suit, number_or_name, inverted=False, imageset=None):
+    def __init__(self, suit, number_or_name, inverted=False, imageset=None, backimage=None):
         self.__suit = suit
 
         if isinstance(number_or_name, int) and 0 < number_or_name < 11:
@@ -135,6 +145,7 @@ class MinorArcana(object):
         n = self.__number or 11 + self.courts().index(self.__name["en"])
         x, y = (n - 1) * w, (2 + self.suits().index(self.__suit)) * h
         self.__image = imageset.crop((x, y, x+w, y+h)).rotate(180) if inverted else imageset.crop((x, y, x+w, y+h))
+        self.__back  = backimage
 
     @property
     def suit(self):
@@ -158,6 +169,10 @@ class MinorArcana(object):
     @property
     def image(self):
         return self.__image
+
+    @property
+    def back(self):
+        return self.__back
 
     @property
     def info(self):

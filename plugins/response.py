@@ -8,7 +8,8 @@ def fortune_tarot(message):
     card = deck.pick_one_from(deck.major_arcanas)
     filename = ('tarot_{0}_inverted.png' if card.inverted else 'tarot_{0}.png').format(card.name["en"])
     comment  = "*{0}*\n{1}".format(card.info, card.keywords)
-    images.post(message, card.image, title=card.name["en"].upper(), comment=comment, file_name=filename)
+    image = images.concat([card.image, card.back, card.back])
+    images.post(message, image, title=card.name["en"].upper(), comment=comment, file_name=filename)
 
 @listen_to(r'^tarot 3')
 def fortune_3tarot(message):

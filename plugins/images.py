@@ -40,3 +40,6 @@ def concat(image_list):
         canvas.paste(image, (offset, 0))
         offset += image.size[0]
     return canvas
+
+def back():
+    return Image.open('materials/tarot-back.png')
