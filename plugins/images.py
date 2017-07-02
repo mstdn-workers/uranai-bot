@@ -1,8 +1,9 @@
-import requests
-import slackbot_settings
 import io
 import os.path
+import requests
+import slackbot_settings
 from PIL import Image
+
 
 def filename_to_filetype(file_name):
     file_name = file_name or 'sample.png'
@@ -11,7 +12,7 @@ def filename_to_filetype(file_name):
     return file_type if file_type != 'jpg' else 'jpeg'
 
 
-def post_image(message, pillow_image, title=None, comment=None, file_name=None):
+def post(message, pillow_image, title=None, comment=None, file_name=None):
     output = io.BytesIO()
     pillow_image.save(output, filename_to_filetype(file_name))
     params = {

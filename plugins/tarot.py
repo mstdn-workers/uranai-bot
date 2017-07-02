@@ -13,10 +13,14 @@ class Deck(object):
         if not keywords:
             keywords = data.load_keywords()
 
-        self.__major = [MajorArcana(n, en, jp, inverted=shuffled and data.true_or_false(), imageset=imageset, keywords=keywords[str(n)])
-                        for n, en, jp in MajorArcana.define()]
-        self.__minor = [MinorArcana(s, n, inverted=shuffled and data.true_or_false(), imageset=imageset)
-                        for s, n in MinorArcana.define()]
+        self.__major = [
+            MajorArcana(n, en, jp, inverted=shuffled and data.true_or_false(),imageset=imageset, keywords=keywords[str(n)])
+            for n, en, jp in MajorArcana.define()
+        ]
+        self.__minor = [
+            MinorArcana(s, n, inverted=shuffled and data.true_or_false(), imageset=imageset)
+            for s, n in MinorArcana.define()
+        ]
         if shuffled:
             random.shuffle(self.__major)
             random.shuffle(self.__minor)
