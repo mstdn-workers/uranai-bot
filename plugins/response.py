@@ -2,16 +2,19 @@ from slackbot.bot import respond_to, listen_to
 from plugins import tarot, images
 
 
-@listen_to(r'^tarot$')
+test = False
+prefix = "test " if test else ""
+
+@listen_to(r'^{0}tarot$'.format(prefix))
 def fortune_tarot(message):
     deck = tarot.Deck(shuffled=True)
     card = deck.pick_one_from(deck.major_arcanas)
     filename = ('tarot_{0}_inverted.png' if card.inverted else 'tarot_{0}.png').format(card.name["en"])
     comment  = "*{0}*\n{1}".format(card.info, card.keywords)
-    image = images.concat([card.image, card.back, card.back])
+    image = images.concat([card.image, images.blank(), images.blank()])
     images.post(message, image, title=card.name["en"].upper(), comment=comment, file_name=filename)
 
-@listen_to(r'^tarot 3')
+@listen_to(r'^{0}tarot 3'.format(prefix))
 def fortune_3tarot(message):
     deck  = tarot.Deck(shuffled=True)
     cards = deck.pick(3)

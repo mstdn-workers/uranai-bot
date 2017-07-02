@@ -43,3 +43,6 @@ def concat(image_list):
 
 def back():
     return Image.open('materials/tarot-back.png')
+
+def blank():
+    return Image.new('RGBA', (85,140), (255,255,255,0))
