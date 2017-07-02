@@ -17,6 +17,6 @@ def fortune_3tarot(message):
     cards = deck.pick(3)
     image = images.concat([card.image for card in cards])
     when  = ["過去","現在","未来"]
-    comments = "\n".join(["*{0}:　{1}*　{2}".format(when[cards.index(card)], card.info, card.keywords) for card in cards])
+    comments = "\n".join(["*{0}: {1}*　{2}".format(when[cards.index(card)], card.info, card.keywords) for card in cards])
     filename = 'tarot_three.png'
     images.post(message, image, title="・".join(when), comment=comments, file_name=filename)

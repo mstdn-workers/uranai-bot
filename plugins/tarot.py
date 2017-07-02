@@ -70,7 +70,11 @@ class MajorArcana(object):
 
     @property
     def number(self):
-        return self.__number or self.__name["en"]
+        return self.__number
+
+    @property
+    def roman(self):
+        return data.arabic_to_roman(self.__number)
 
     @property
     def inverted(self):
@@ -86,7 +90,7 @@ class MajorArcana(object):
 
     @property
     def info(self):
-        return "{0} {1}({2})".format(self.number, self.name["jp"], "逆位置" if self.inverted else "正位置")
+        return "{0} {1}({2})".format(self.roman, self.name["jp"], "逆位置" if self.inverted else "正位置")
 
     @property
     def keywords(self):
