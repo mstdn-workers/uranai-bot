@@ -59,7 +59,8 @@ class MajorArcana(object):
 
         w, h = 85, 140
         x, y = self.__number % 11 * w, self.__number // 11 * h
-        self.__image = imageset.crop((x, y, x+w, y+h)).rotate(180) if inverted else imageset.crop((x, y, x+w, y+h))
+        img = imageset.crop((x, y, x+w, y+h))
+        self.__image = img.rotate(180) if inverted else img
         self.__back  = backimage
 
         self.__keywords = keywords
@@ -148,7 +149,8 @@ class MinorArcana(object):
         w, h = 85, 140
         n = self.__number or 11 + self.courts().index(self.__name["en"])
         x, y = (n - 1) * w, (2 + self.suits().index(self.__suit)) * h
-        self.__image = imageset.crop((x, y, x+w, y+h)).rotate(180) if inverted else imageset.crop((x, y, x+w, y+h))
+        img = imageset.crop((x, y, x+w, y+h))
+        self.__image = img.rotate(180) if inverted else img
         self.__back  = backimage
 
     @property
