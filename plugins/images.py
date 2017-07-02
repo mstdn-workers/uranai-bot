@@ -14,7 +14,7 @@ def filename_to_filetype(file_name):
 
 def post(message, pillow_image, title=None, comment=None, file_name=None):
     output = io.BytesIO()
-    pillow_image.save(output, filename_to_filetype(file_name))
+    pillow_image.save(output, filename_to_filetype(file_name),quality=100)
     params = {
         'token'           : slackbot_settings.API_TOKEN,
         'channels'        : message.channel._body['id'],
@@ -34,7 +34,7 @@ def concat(image_list):
     width  = sum(widths)
     height = max(heights)
 
-    canvas = Image.new('RGB', (width, height))
+    canvas = Image.new('RGBA', (width, height), (255,255,255,0))
     offset = 0
     for image in image_list:
         canvas.paste(image, (offset, 0))
