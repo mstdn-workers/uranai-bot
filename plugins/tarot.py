@@ -94,6 +94,10 @@ class MajorArcana(object):
         return "{0} {1}({2})".format(self.roman, self.name["jp"], "逆位置" if self.inverted else "正位置")
 
     @property
+    def info_rows(self):
+        return "{0} {1}\n({2})".format(self.roman, self.name["jp"], "逆位置" if self.inverted else "正位置")
+
+    @property
     def keywords(self):
         if self.__keywords:
             return "、".join(self.__keywords["inverted"]["keywords"] if self.__inverted else self.__keywords["normal"]["keywords"])

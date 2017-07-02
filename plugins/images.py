@@ -2,7 +2,7 @@ import io
 import os.path
 import requests
 import slackbot_settings
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 
 def filename_to_filetype(file_name):
@@ -41,8 +41,34 @@ def concat(image_list):
         offset += image.size[0]
     return canvas
 
+def margin(image, size):
+    canvas = Image.new('RGBA', tuple([s+size*2 for s in image.size]), (255, 255, 255, 0))
+    canvas.paste(image, (size, size))
+    return canvas
+
 def back():
     return Image.open('materials/tarot-back.png')
 
 def blank():
     return Image.new('RGBA', (85,140), (255,255,255,0))
+
+def text_at_center(canvas, text, fontfile='materials/font.otf', fontsize=18):
+    image_w, image_h = canvas.size[0] * 4, canvas.size[1] * 4
+    image = Image.new('RGBA', (image_w, image_h))
+    draw  = ImageDraw.Draw(image)
+
+    draw.font = ImageFont.truetype(fontfile, fontsize * 4)
+    lines = text.splitlines()
+    ws, hs = [s for s in zip(*[draw.font.getsize(line) for line in lines])]
+    text_w, text_h = max(ws), sum(hs)
+
+    for row,line in enumerate(lines):
+        position = (image_w - ws[row])/2, (image_h - text_h)/2 + hs[row] * row
+        draw.text(position, line, (0, 0, 0, 255))
+
+    canvas.paste(image.resize((image_w//4, image_h//4), Image.ANTIALIAS), (0, 0))
+    return canvas
+
+
+
+
