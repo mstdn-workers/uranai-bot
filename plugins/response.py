@@ -2,7 +2,7 @@ from slackbot.bot import respond_to, listen_to
 from plugins import tarot, images
 
 
-test = True
+test = False
 prefix = "test " if test else ""
 
 @listen_to(r'{0}tarot$'.format(prefix))
