@@ -2,7 +2,7 @@ import io
 import os.path
 import requests
 import slackbot_settings
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 
 
 def filename_to_filetype(file_name):
@@ -26,8 +26,6 @@ def post(message, pillow_image, title=None, comment=None, file_name=None):
     }
     requests.post('https://slack.com/api/files.upload', data=params, files=file_object)
 
-def open_tarot_waite():
-    return Image.open('materials/tarot-waite.png')
 
 def concat(image_list):
     widths, heights = zip(*( img.size for img in image_list))
@@ -42,19 +40,23 @@ def concat(image_list):
     return canvas
 
 def margin(image, size):
-    canvas = Image.new('RGBA', tuple([s+size*2 for s in image.size]), (255, 255, 255, 0))
-    canvas.paste(image, (size, size))
+    canvas = Image.new('RGBA', tuple([ o + m * 2 for o, m in zip(image.size, size) ]), (255, 255, 255, 0))
+    canvas.paste(image, size)
     return canvas
 
-def back():
-    return Image.open('materials/tarot-back.png')
+def set_size(image, size):
+    canvas = Image.new('RGBA', size, (255, 255, 255, 0))
+    canvas.paste(image, tuple([ (c - o) // 2 for o, c in zip(image.size, size) ]))
+    return canvas
 
-def blank():
-    return Image.new('RGBA', (85,140), (255,255,255,0))
+def bgcolor(image, color):
+    canvas = Image.new('RGBA', image.size, color)
+    canvas = Image.alpha_composite(canvas, image)
+    return canvas
 
 def text_at_center(canvas, text, fontfile='materials/font.otf', fontsize=18):
     image_w, image_h = canvas.size[0] * 4, canvas.size[1] * 4
-    image = Image.new('RGBA', (image_w, image_h))
+    image = Image.new('RGBA', (image_w, image_h), (255,255,255,0))
     draw  = ImageDraw.Draw(image)
 
     draw.font = ImageFont.truetype(fontfile, fontsize * 4)
@@ -66,9 +68,23 @@ def text_at_center(canvas, text, fontfile='materials/font.otf', fontsize=18):
         position = (image_w - ws[row])/2, (image_h - text_h)/2 + hs[row] * row
         draw.text(position, line, (0, 0, 0, 255))
 
-    canvas.paste(image.resize((image_w//4, image_h//4), Image.ANTIALIAS), (0, 0))
+    img = image.resize((image_w//4, image_h//4), Image.ANTIALIAS)
+    canvas.paste(img, (0,0))
     return canvas
 
 
+def dropshadow(image, border=5):
+    img = ImageOps.invert(image.split()[3]).convert("RGBA")
+    img = margin(img, (border, border))
+    for n in range(3):
+        img = img.filter(ImageFilter.BLUR)
+    img = Image.alpha_composite(img, margin(image, (border,border)))
+    return img
 
+back  = Image.open('materials/tarot-back.png')
+blank = Image.new('RGBA', (85,140), (255,255,255,0))
+tarot_waite = Image.open('materials/tarot-waite.png')
 
+panel_size  = (160, 150)
+canvas_size = (273,182)
+bg_color    = (248,248,248,255)

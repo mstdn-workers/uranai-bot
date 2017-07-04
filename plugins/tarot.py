@@ -8,10 +8,10 @@ class Deck(object):
 
     def __init__(self, shuffled=False, imageset=None, backimage=None, keywords=None):
         if not imageset:
-            imageset = images.open_tarot_waite()
+            imageset = images.tarot_waite
 
         if not backimage:
-            backimage = images.back()
+            backimage = images.back
 
         if not keywords:
             keywords = data.load_keywords()
