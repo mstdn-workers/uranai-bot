@@ -17,11 +17,11 @@ class Deck(object):
             keywords = data.load_keywords()
 
         self.__major = [
-            MajorArcana(n, en, jp, inverted=shuffled and data.true_or_false(),imageset=imageset, backimage=backimage, keywords=keywords[str(n)])
+            MajorArcana(n, en, jp, reversed=shuffled and data.true_or_false(), imageset=imageset, backimage=backimage, keywords=keywords[str(n)])
             for n, en, jp in MajorArcana.define()
         ]
         self.__minor = [
-            MinorArcana(s, n, inverted=shuffled and data.true_or_false(), imageset=imageset, backimage=backimage)
+            MinorArcana(s, n, reversed=shuffled and data.true_or_false(), imageset=imageset, backimage=backimage)
             for s, n in MinorArcana.define()
         ]
         if shuffled:
@@ -49,18 +49,18 @@ class MajorArcana(object):
     __back     = None
     __name     = None
     __number   = None
-    __inverted = False
+    __reversed = False
     __keywords = None
 
-    def __init__(self, number, name, japanese_name=None, inverted=False, imageset=None, backimage=None, keywords=None):
+    def __init__(self, number, name, japanese_name=None, reversed=False, imageset=None, backimage=None, keywords=None):
         self.__number   = number
         self.__name     = {"en":name, "jp":japanese_name}
-        self.__inverted = inverted
+        self.__reversed = reversed
 
         w, h = 85, 140
         x, y = self.__number % 11 * w, self.__number // 11 * h
         img = imageset.crop((x, y, x+w, y+h))
-        self.__image = img.rotate(180) if inverted else img
+        self.__image = img.rotate(180) if reversed else img
         self.__back  = backimage
 
         self.__keywords = keywords
@@ -78,8 +78,8 @@ class MajorArcana(object):
         return data.arabic_to_roman(self.__number)
 
     @property
-    def inverted(self):
-        return self.__inverted
+    def reversed(self):
+        return self.__reversed
 
     @property
     def image(self):
@@ -91,16 +91,16 @@ class MajorArcana(object):
 
     @property
     def info(self):
-        return "{0} {1}({2})".format(self.roman, self.name["jp"], "逆位置" if self.inverted else "正位置")
+        return "{0} {1}({2})".format(self.roman, self.name["jp"], "逆位置" if self.reversed else "正位置")
 
     @property
     def info_rows(self):
-        return "{0} {1}\n({2})".format(self.roman, self.name["jp"], "逆位置" if self.inverted else "正位置")
+        return "{0} {1}\n({2})".format(self.roman, self.name["jp"], "逆位置" if self.reversed else "正位置")
 
     @property
     def keywords(self):
         if self.__keywords:
-            return "、".join(self.__keywords["inverted"]["keywords"] if self.__inverted else self.__keywords["normal"]["keywords"])
+            return "、".join(self.__keywords["inverted"]["keywords"] if self.__reversed else self.__keywords["normal"]["keywords"])
         return None
 
     @classmethod
@@ -137,9 +137,9 @@ class MinorArcana(object):
     __suit   = None
     __name = None
     __number = None
-    __inverted = False
+    __reversed = False
 
-    def __init__(self, suit, number_or_name, inverted=False, imageset=None, backimage=None):
+    def __init__(self, suit, number_or_name, reversed=False, imageset=None, backimage=None):
         self.__suit = suit
 
         if isinstance(number_or_name, int) and 0 < number_or_name < 11:
@@ -148,13 +148,13 @@ class MinorArcana(object):
         name = "Ace" if number_or_name == 1 else number_or_name
         self.__name = {"en": name, "jp": self.__to_jp(name)}
 
-        self.__inverted = inverted
+        self.__reversed = reversed
 
         w, h = 85, 140
         n = self.__number or 11 + self.courts().index(self.__name["en"])
         x, y = (n - 1) * w, (2 + self.suits().index(self.__suit)) * h
         img = imageset.crop((x, y, x+w, y+h))
-        self.__image = img.rotate(180) if inverted else img
+        self.__image = img.rotate(180) if reversed else img
         self.__back  = backimage
 
     @property
@@ -173,8 +173,8 @@ class MinorArcana(object):
         return self.__number or self.__name["en"]
 
     @property
-    def inverted(self):
-        return self.__inverted
+    def reversed(self):
+        return self.__reversed
 
     @property
     def image(self):
@@ -186,7 +186,7 @@ class MinorArcana(object):
 
     @property
     def info(self):
-        return "{0}({1})".format(self.name["jp"], "逆位置" if self.inverted else "正位置")
+        return "{0}({1})".format(self.name["jp"], "逆位置" if self.reversed else "正位置")
 
     @property
     def keywords(self):
