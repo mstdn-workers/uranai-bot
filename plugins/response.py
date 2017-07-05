@@ -1,5 +1,6 @@
 from slackbot.bot import respond_to, listen_to
 from plugins import tarot, images, mode, cache, data
+from collections import OrderedDict
 
 
 @listen_to(r'{0}tarot$'.format(mode.test_prefix))
@@ -21,14 +22,14 @@ def fortune_tarot(message):
         images.post(message, image, title=title, comment=comment, file_name=filename)
 
 @listen_to(r'{0}tarot 3$'.format(mode.test_prefix))
-def fortune_3tarot(message):
+def fortune_tarot_3(message):
     if mode.uranai:
         deck  = tarot.Deck(shuffled=True)
         cards = deck.pick(deck.major_arcanas, 3)
         image = images.dropshadow(images.concat([card.image for card in cards]))
         image = images.bgcolor(images.set_size(image, images.canvas_size), images.bg_color)
         when  = ["過去","現在","未来"]
-        comments = "\n".join(["*{0}: {1}*　{2}".format(when[cards.index(card)], card.info, card.keywords) for card in cards])
+        comments = "\n".join(["*{0}: {1}*\n{2}".format(when[cards.index(card)], card.info, card.keywords) for card in cards])
         filename = 'tarot_three.png'
         images.post(message, image, title="・".join(when), comment=comments, file_name=filename)
         cache.add("uranai", message, [ card.name for card in cards ])
@@ -55,5 +56,33 @@ def fortune_tarot_name(message, name):
         else:
             comment = None
         filename = 'tarot_{0}.png'.format(card.name["en"])
-        title = card.name["en"].upper()
-        images.post(message, image, title=title, comment=comment, file_name=filename)
+        images.post(message, image, title=card.name["en"].upper(), comment=comment, file_name=filename)
+
+@listen_to(r'{0}tarot help$'.format(mode.test_prefix))
+def fortune_tarot_help(message):
+    if mode.uranai:
+        help = OrderedDict()
+
+        help.update((
+            ("tarot", "１枚のカードを引きます。"),
+            ("tarot 3", "過去・現在・未来を表す３枚のカードを引きます。"),
+            ("tarot help", "ヘルプを表示します。"),
+            ("tarot help names", "名前でカードを表示するヘルプを表示します。"),
+        ))
+
+        max_len = str(max([len(key) for key in help.keys()]))
+        message.send("```" + "\n".join([ ("{0:<" + max_len + "} : {1}").format(cmd, desc)
+                                         for cmd,desc in help.items() ]) + "\n```" + images.mao)
+
+@listen_to(r'{0}tarot help names$'.format(mode.test_prefix))
+def fortune_tarot_help_names(message):
+    if mode.uranai:
+        help = OrderedDict()
+        deck = tarot.Deck(shuffled=False)
+        help.update((
+            ("tarot " + card.name["en"].lower(), "{0}のカードを表示します。".format(card.name["jp"]))
+            for card in deck.major_arcanas
+        ))
+        max_len = str(max([len(key) for key in help.keys()]))
+        message.send("```" + "\n".join([ ("{0:<" + max_len + "} : {1}").format(cmd, desc)
+                                         for cmd,desc in help.items() ]) + "\n```" + images.mao)

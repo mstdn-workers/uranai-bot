@@ -88,3 +88,5 @@ tarot_waite = Image.open('materials/tarot-waite.png')
 panel_size  = (160, 150)
 canvas_size = (273,182)
 bg_color    = (248,248,248,255)
+
+mao = ":mao_rev::speech_balloon:"
