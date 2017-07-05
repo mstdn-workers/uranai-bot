@@ -1,6 +1,8 @@
+import re
 import json
 import random
-
+import requests
+import slackbot_settings
 
 def load(filename):
     with open(filename, 'r') as f:
@@ -30,3 +32,15 @@ def arabic_to_roman(arabic):
         result += roman_digit*(arabic//denom)
         arabic %= denom
     return result
+
+def get_username(user_id):
+    emoji = re.compile(r":.+?:")
+    params = {
+        'token' : slackbot_settings.API_TOKEN,
+        'user'  : user_id
+    }
+    res  = requests.post('https://slack.com/api/users.profile.get', data=params)
+    user = res.json()["profile"]
+    first, last = user["first_name"], user["last_name"]
+    last = emoji.sub('', last)
+    return " ".join([first, last]) if last else first

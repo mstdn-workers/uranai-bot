@@ -36,12 +36,25 @@ class Deck(object):
     def minor_arcanas(self):
         return self.__minor
 
-    def pick(self, count, minor_arcana=False):
-        arcana = self.__minor if minor_arcana else self.__major
+    def pick(self, arcana, count):
         return [self.pick_one_from(arcana) for n in range(count) if len(arcana) > 0]
 
     def pick_one_from(self, arcana):
         return arcana.pop(0) if len(arcana) > 0 else None
+
+    def pick_by_name(self, arcana, names):
+        def no_the(name):
+            return name.replace("The ", "")
+        def patterns(name):
+            return [name] + list(set(
+                [ x
+                      for n in name.values()
+                      for x in [n, n.upper(), n.lower(), no_the(n), no_the(n).upper(), no_the(n).lower()]]
+            ))
+        cards = [ a for a in arcana for name in names if name in patterns(a.name) ]
+        for card in cards:
+            arcana.remove(card)
+        return cards
 
 
 class MajorArcana(object):
@@ -64,6 +77,14 @@ class MajorArcana(object):
         self.__back  = backimage
 
         self.__keywords = keywords
+
+    @property
+    def is_major(self):
+        return True
+
+    @property
+    def suite(self):
+        return None
 
     @property
     def name(self):
@@ -100,7 +121,13 @@ class MajorArcana(object):
     @property
     def keywords(self):
         if self.__keywords:
-            return "、".join(self.__keywords["inverted"]["keywords"] if self.__reversed else self.__keywords["normal"]["keywords"])
+            return "、".join(self.__keywords["reversed"]["keywords"] if self.__reversed else self.__keywords["normal"]["keywords"])
+        return None
+
+    @property
+    def keywords_another_side(self):
+        if self.__keywords:
+            return "、".join(self.__keywords["reversed"]["keywords"] if not self.__reversed else self.__keywords["normal"]["keywords"])
         return None
 
     @classmethod
@@ -145,8 +172,8 @@ class MinorArcana(object):
         if isinstance(number_or_name, int) and 0 < number_or_name < 11:
             self.__number = number_or_name
 
-        name = "Ace" if number_or_name == 1 else number_or_name
-        self.__name = {"en": name, "jp": self.__to_jp(name)}
+        name = self.__number_to_name(number_or_name)
+        self.__name = {"en": name, "jp": self.__to_jp(name) or self.__to_zenkaku(str(number_or_name))}
 
         self.__reversed = reversed
 
@@ -158,6 +185,10 @@ class MinorArcana(object):
         self.__back  = backimage
 
     @property
+    def is_major(self):
+        return False
+
+    @property
     def suit(self):
         return self.__suit
 
@@ -165,12 +196,16 @@ class MinorArcana(object):
     def name(self):
         return {
             "en": "{0} of {1}".format(self.__name["en"], self.__suit),
-            "jp": "{0}の{1}".format(self.__to_jp(self.__suit), self.__to_jp(self.__name["en"]))
+            "jp": "{0}の{1}".format(self.__to_jp(self.__suit), self.__name["jp"])
         }
 
     @property
     def number(self):
         return self.__number or self.__name["en"]
+
+    @property
+    def roman(self):
+        return data.arabic_to_roman(self.__number)
 
     @property
     def reversed(self):
@@ -189,24 +224,44 @@ class MinorArcana(object):
         return "{0}({1})".format(self.name["jp"], "逆位置" if self.reversed else "正位置")
 
     @property
+    def info_rows(self):
+        return "{0}\n({1})".format(self.name["jp"], "逆位置" if self.reversed else "正位置")
+
+    @property
     def keywords(self):
         return None
 
     @staticmethod
     def __to_jp(name):
-        if name == 1: name = "Ace"
         names = {
-            "Page"      : "ペイジ",
-            "Knight"    : "ナイト",
-            "Queen"     : "クイーン",
-            "King"      : "キング",
+            "Page"      : "従者",
+            "Knight"    : "騎士",
+            "Queen"     : "女王",
+            "King"      : "王",
             "Ace"       : "エース",
-            "Wands"     : "ワンド",
-            "Pentacles" : "ペンタクル",
-            "Cups"      : "カップ",
-            "Swords"    : "ソード",
+            "Wands"     : "杖",
+            "Pentacles" : "金貨",
+            "Cups"      : "聖杯",
+            "Swords"    : "剣",
         }
-        return names.get(name) or name
+        return names.get(name)
+
+    @staticmethod
+    def __to_zenkaku(name):
+        """
+        http://cuio.blog2.fc2.com/blog-entry-2165.html
+        """
+        t = dict((0x0020 + ch, 0xff00 + ch) for ch in range(0x5f))
+        t[0x0020] = 0x3000
+        return name.translate(t)
+
+    @staticmethod
+    def __number_to_name(number):
+        names = {
+            1: "Ace", 2: "Two",   3: "Three", 4: "Four",  5: "Five",
+            6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"
+        }
+        return names.get(number) or str(number)
 
     @classmethod
     def define(cls):
