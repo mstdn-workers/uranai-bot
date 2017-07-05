@@ -67,22 +67,19 @@ def fortune_tarot_help(message):
             ("tarot", "１枚のカードを引きます。"),
             ("tarot 3", "過去・現在・未来を表す３枚のカードを引きます。"),
             ("tarot help", "ヘルプを表示します。"),
-            ("tarot help names", "名前でカードを表示するヘルプを表示します。"),
+            ("tarot [name]", "[name]のカードを表示します。"),
+            ("tarot names", "カードの名前を一覧表示します。"),
         ))
 
-        max_len = str(max([len(key) for key in help.keys()]))
-        message.send("```" + "\n".join([ ("{0:<" + max_len + "} : {1}").format(cmd, desc)
-                                         for cmd,desc in help.items() ]) + "\n```" + images.mao)
+        message.send("```" + "\n".join(["{0}:\n{1}".format(cmd, desc) for cmd,desc in help.items() ]) + "\n```" + images.mao)
 
-@listen_to(r'{0}tarot help names$'.format(mode.test_prefix))
-def fortune_tarot_help_names(message):
+@listen_to(r'{0}tarot names$'.format(mode.test_prefix))
+def fortune_tarot_names(message):
     if mode.uranai:
         help = OrderedDict()
         deck = tarot.Deck(shuffled=False)
         help.update((
-            ("tarot " + card.name["en"].lower(), "{0}のカードを表示します。".format(card.name["jp"]))
+            (card.name["en"].lower(), "{0}のカード".format(card.name["jp"]))
             for card in deck.major_arcanas
         ))
-        max_len = str(max([len(key) for key in help.keys()]))
-        message.send("```" + "\n".join([ ("{0:<" + max_len + "} : {1}").format(cmd, desc)
-                                         for cmd,desc in help.items() ]) + "\n```" + images.mao)
+        message.send("```" + "\n".join(["{0}: {1}".format(cmd, desc) for cmd,desc in help.items() ]) + "\n```" + images.mao)
