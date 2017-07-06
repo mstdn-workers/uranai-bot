@@ -1,32 +1,5 @@
-import io
-import os.path
-
-import requests
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
-
-import slackbot_settings
-
-
-def filename_to_filetype(file_name):
-    file_name = file_name or 'sample.png'
-    root, ext = os.path.splitext(file_name)
-    file_type = ext[1:] if ext else 'png'
-    return file_type if file_type != 'jpg' else 'jpeg'
-
-
-def post(message, pillow_image, title=None, comment=None, file_name=None):
-    output = io.BytesIO()
-    pillow_image.save(output, filename_to_filetype(file_name),quality=100)
-    params = {
-        'token'           : slackbot_settings.API_TOKEN,
-        'channels'        : message.channel._body['id'],
-        'title'           : title,
-        'initial_comment' : comment
-    }
-    file_object = {
-        'file' : (file_name, output.getvalue())
-    }
-    requests.post('https://slack.com/api/files.upload', data=params, files=file_object)
+from plugins import resources, tarot
 
 
 def concat(image_list):
@@ -84,22 +57,17 @@ def dropshadow(image, border=5):
     return img
 
 def create_single_tarot_image(card, text=None):
-    panel = text_at_center(concat([tarot_blank, tarot_blank]), text or card.info_rows, fontsize=(18 if card.is_major else 16))
-    panel = set_size(panel, (160, 150))
-    image = concat([dropshadow(card.image), panel])
-    image = bgcolor(set_size(image, canvas_size), bg_color)
+    fontsize = 18 if isinstance(card, tarot.MinorArcana) else 16
+    image = concat([resources.tarot_blank, resources.tarot_blank])
+    image = text_at_center(image, text or card.info_rows, fontsize=fontsize)
+    image = set_size(image, (160, 150))
+    image = concat([dropshadow(card.image), image])
+    image = bgcolor(set_size(image, resources.canvas_size), resources.bg_color)
     return image
 
 def create_triple_tarot_image(cards):
     image = dropshadow(concat([card.image for card in cards]))
-    image = bgcolor(set_size(image, canvas_size), bg_color)
+    image = bgcolor(set_size(image, resources.canvas_size), resources.bg_color)
     return image
 
-
-tarot_back  = Image.open('materials/tarot-back.png')
-tarot_blank = Image.new('RGBA', (85, 140), (255, 255, 255, 0))
-tarot_waite = Image.open('materials/tarot-waite.png')
-
-canvas_size = (273,182)
-bg_color    = (248,248,248,255)
 

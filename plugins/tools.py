@@ -1,19 +1,8 @@
-import re
-import json
 import random
-import requests
-import slackbot_settings
 
-def load(filename):
-    with open(filename, 'r') as f:
-        data = json.load(f)
-    return data
 
 def true_or_false():
     return random.choice([True, False])
-
-def load_keywords():
-    return load('materials/keywords.json')
 
 def arabic_to_roman(arabic):
     """
@@ -33,14 +22,17 @@ def arabic_to_roman(arabic):
         arabic %= denom
     return result
 
-def get_username(user_id):
-    emoji = re.compile(r":.+?:")
-    params = {
-        'token' : slackbot_settings.API_TOKEN,
-        'user'  : user_id
+def number_to_name(number):
+    names = {
+        1: "Ace", 2: "Two",   3: "Three", 4: "Four",  5: "Five",
+        6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"
     }
-    res  = requests.post('https://slack.com/api/users.profile.get', data=params)
-    user = res.json()["profile"]
-    first, last = user["first_name"], user["last_name"]
-    last = emoji.sub('', last)
-    return " ".join([first, last]) if last else first
+    return names.get(number) or str(number)
+
+def to_zenkaku(name):
+    """
+    http://cuio.blog2.fc2.com/blog-entry-2165.html
+    """
+    t = dict((0x0020 + ch, 0xff00 + ch) for ch in range(0x5f))
+    t[0x0020] = 0x3000
+    return name.translate(t)
