@@ -18,7 +18,7 @@ def fortune_tarot(message):
         image = images.bgcolor(images.set_size(image, images.canvas_size), images.bg_color)
         comment  = "*{0}*\n{1}".format("キーワード", card.keywords)
         filename = 'tarot_{0}.png'.format(card.name["en"] + '_reversed' if card.reversed else '')
-        title    = "" if not names else "キーカード: " + card.name["en"].upper()
+        title    = ("" if not names else "キーカード: ") + card.name["en"].upper()
         images.post(message, image, title=title, comment=comment, file_name=filename)
 
 @listen_to(r'{0}tarot 3$'.format(mode.test_prefix))
