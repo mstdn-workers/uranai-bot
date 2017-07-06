@@ -1,6 +1,4 @@
 from abc import *
-
-import plugins.resources
 from plugins import tools, resources
 import random
 
@@ -10,7 +8,7 @@ class Deck(object):
     __minor = []
 
     def __init__(self, shuffled=False, lang="jp",
-                 imageset=resources.tarot_waite, backimage=resources.tarot_back, keywords=plugins.resources.load_keywords()):
+                 imageset=resources.tarot_waite, backimage=resources.tarot_back, keywords=resources.load_keywords()):
 
         self.__major = [
             MajorArcana(n, en, jp, shuffled and tools.true_or_false(), imageset, backimage, keywords[str(n)], lang)
@@ -60,8 +58,9 @@ class Tarot(object, metaclass=ABCMeta):
     __reversed   = None
     __keywords   = None
     __lang       = None
+    __is_major   = None
 
-    def __init__(self, name, suit, number, reversed, image, back_image, keywords, lang):
+    def __init__(self, name, suit, number, reversed, image, back_image, keywords, lang, is_major):
         self.__name       = name
         self.__suit       = suit
         self.__number     = number
@@ -70,6 +69,7 @@ class Tarot(object, metaclass=ABCMeta):
         self.__back_image = back_image
         self.__keywords   = keywords
         self.__lang       = lang
+        self.__is_major   = is_major
 
     @property
     def lang(self):
@@ -133,6 +133,10 @@ class Tarot(object, metaclass=ABCMeta):
     def display_name(self):
         raise NotImplementedError
 
+    @property
+    def is_major(self):
+        return self.__is_major
+
 class MajorArcana(Tarot):
 
     def __init__(self, number, name, japanese_name, reversed, imageset, backimage, keywords, lang):
@@ -140,12 +144,11 @@ class MajorArcana(Tarot):
         x, y = number % 11 * w, number // 11 * h
         img = imageset.crop((x, y, x+w, y+h))
         img = img.rotate(180) if reversed else img
-        super().__init__({"en":name, "jp":japanese_name}, None, number, reversed, img, backimage, keywords, lang)
+        super().__init__({"en":name, "jp":japanese_name}, None, number, reversed, img, backimage, keywords, lang, True)
 
     @property
     def display_name(self):
         return "{0} {1}".format(self.roman, self.name[self.lang])
-
 
 class MinorArcana(Tarot):
 
@@ -163,9 +166,8 @@ class MinorArcana(Tarot):
         x, y = (n - 1) * w, (2 + resources.minor_arcana.suits.index(suit)) * h
         img = imageset.crop((x, y, x+w, y+h))
         img = img.rotate(180) if reversed else img
-        super().__init__(name, suit, number, reversed, img, backimage, keywords, lang)
+        super().__init__(name, suit, number, reversed, img, backimage, keywords, lang, False)
 
     @property
     def display_name(self):
         return self.name[self.lang]
-

@@ -1,8 +1,5 @@
 from slackbot.bot import respond_to, listen_to
-
-import plugins.api
-import plugins.tools
-from plugins import tarot, images, mode, cache, tools
+from plugins import tarot, images, mode, cache, api
 from collections import OrderedDict
 
 
@@ -14,14 +11,14 @@ def fortune_tarot(message):
         deck  = tarot.Deck(shuffled=True)
         title = ""
         if drawn_cards_exists(deck, message):
-            message.send("今の *" + plugins.api.get_username(message.body["user"]) + "* さんに必要なキーカードはこちらです。")
+            message.send("今の *" + api.get_username(message.body["user"]) + "* さんに必要なキーカードはこちらです。")
             title += "キーカード: "
         card  = deck.draw_one(deck.major_arcanas)
         image = images.create_single_tarot_image(card)
         title   += card.name["en"].upper()
         comment  = "*{0}*\n{1}".format("キーワード", card.keywords)
         filename = 'tarot_{0}{1}.png'.format(card.name["en"], '_reversed' if card.reversed else '')
-        plugins.api.post_image(message, image, title=title, comment=comment, file_name=filename)
+        api.post_image(message, image, title=title, comment=comment, file_name=filename)
 
 @listen_to(cmd("tarot 3"))
 def fortune_tarot_3(message):
@@ -33,7 +30,7 @@ def fortune_tarot_3(message):
         title    = "・".join(when)
         comments = "\n".join(["*{0}: {1}*\n{2}".format(when[cards.index(card)], card.info, card.keywords) for card in cards])
         filename = 'tarot_three.png'
-        plugins.api.post_image(message, image, title=title, comment=comments, file_name=filename)
+        api.post_image(message, image, title=title, comment=comments, file_name=filename)
         cache.add("uranai", message, [ card.name for card in cards ])
 
 @listen_to(cmd("tarot ([a-zA-Z\s]+)"))
@@ -50,7 +47,7 @@ def fortune_tarot_name(message, name):
             "*{0}*\n{1}".format("正位置のキーワード", card.get_keywords(reversed=False)),
             "*{0}*\n{1}".format("逆位置のキーワード", card.get_keywords(reversed=True))]) if card.keywords else None
         filename = 'tarot_{0}.png'.format(card.name["en"])
-        plugins.api.post_image(message, image, title=title, comment=comment, file_name=filename)
+        api.post_image(message, image, title=title, comment=comment, file_name=filename)
 
 @listen_to(cmd("tarot help"))
 def fortune_tarot_help(message):

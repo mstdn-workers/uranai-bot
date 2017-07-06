@@ -1,5 +1,4 @@
 import json
-
 from PIL import Image
 
 tarot_back  = Image.open('materials/tarot-back.png')
