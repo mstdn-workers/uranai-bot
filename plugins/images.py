@@ -1,8 +1,10 @@
 import io
 import os.path
+
 import requests
-import slackbot_settings
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
+
+import slackbot_settings
 
 
 def filename_to_filetype(file_name):
@@ -81,12 +83,23 @@ def dropshadow(image, border=5):
     img = Image.alpha_composite(img, margin(image, (border,border)))
     return img
 
-back  = Image.open('materials/tarot-back.png')
-blank = Image.new('RGBA', (85,140), (255,255,255,0))
+def create_single_tarot_image(card, text=None):
+    panel = text_at_center(concat([tarot_blank, tarot_blank]), text or card.info_rows, fontsize=(18 if card.is_major else 16))
+    panel = set_size(panel, (160, 150))
+    image = concat([dropshadow(card.image), panel])
+    image = bgcolor(set_size(image, canvas_size), bg_color)
+    return image
+
+def create_triple_tarot_image(cards):
+    image = dropshadow(concat([card.image for card in cards]))
+    image = bgcolor(set_size(image, canvas_size), bg_color)
+    return image
+
+
+tarot_back  = Image.open('materials/tarot-back.png')
+tarot_blank = Image.new('RGBA', (85, 140), (255, 255, 255, 0))
 tarot_waite = Image.open('materials/tarot-waite.png')
 
-panel_size  = (160, 150)
 canvas_size = (273,182)
 bg_color    = (248,248,248,255)
 
-mao = "　:speech_balloon:\n:mao_rev:"

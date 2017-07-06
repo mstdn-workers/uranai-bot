@@ -1,3 +1,4 @@
+from abc import *
 from plugins import data, images
 import random
 
@@ -11,7 +12,7 @@ class Deck(object):
             imageset = images.tarot_waite
 
         if not backimage:
-            backimage = images.back
+            backimage = images.tarot_back
 
         if not keywords:
             keywords = data.load_keywords()
@@ -36,28 +37,29 @@ class Deck(object):
     def minor_arcanas(self):
         return self.__minor
 
-    def pick(self, arcana, count):
-        return [self.pick_one_from(arcana) for n in range(count) if len(arcana) > 0]
+    def draw_cards(self, arcana, count):
+        return [self.draw_one(arcana) for n in range(count) if len(arcana) > 0]
 
-    def pick_one_from(self, arcana):
+    def draw_one(self, arcana):
         return arcana.pop(0) if len(arcana) > 0 else None
 
-    def pick_by_name(self, arcana, names):
+    def pick_by_names(self, arcana, names):
         def no_the(name):
             return name.replace("The ", "")
         def patterns(name):
             return [name] + list(set(
-                [ x
-                      for n in name.values()
-                      for x in [n, n.upper(), n.lower(), no_the(n), no_the(n).upper(), no_the(n).lower()]]
-            ))
+                [ x for n in name.values()
+                    for x in [n, n.upper(), n.lower(), no_the(n), no_the(n).upper(), no_the(n).lower()]]))
         cards = [ a for a in arcana for name in names if name in patterns(a.name) ]
         for card in cards:
             arcana.remove(card)
         return cards
 
+class Tarot(object, metaclass=ABCMeta):
+    pass
 
-class MajorArcana(object):
+
+class MajorArcana(Tarot):
     __image    = None
     __back     = None
     __name     = None
@@ -157,8 +159,7 @@ class MajorArcana(object):
             (21, "The World", "世界")
         ]
 
-class MinorArcana(object):
-    __size     = (85, 140)
+class MinorArcana(Tarot):
     __image    = None
     __back     = None
     __suit   = None
