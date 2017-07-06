@@ -155,7 +155,7 @@ class MinorArcana(Tarot):
         name = {
             "en": "{0} of {1}".format(__name, suit),
             "jp": "{0}の{1}".format(
-                resources.minor_arcana.jp_names.get(self.suit),
+                resources.minor_arcana.jp_names.get(suit),
                 resources.minor_arcana.jp_names.get(__name) or tools.to_zenkaku(str(number_or_name)))
         }
         n    = number or 11 + resources.minor_arcana.courts.index(__name)
