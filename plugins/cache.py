@@ -6,7 +6,7 @@ __cache = {
 
 
 def delete_old(key, message, **kwargs):
-    threshold = datetime.now() + timedelta(**kwargs)
+    threshold = datetime.fromtimestamp(float(message.body["ts"])) + timedelta(**kwargs)
     __cache[key] = [c for c in __cache[key] if datetime.fromtimestamp(float(c["ts"])) > threshold]
 
 def delete_user(key, message):
