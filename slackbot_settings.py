@@ -2,7 +2,7 @@ import os.path
 
 
 def read_token():
-    token_file = ".token.card"
+    token_file = ".token"
     token = ""
     if os.path.exists(token_file):
         with open(token_file, 'r') as f:
