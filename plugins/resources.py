@@ -61,6 +61,31 @@ major_arcana = __major_arcana()
 minor_arcana = __minor_arcana()
 position     = __position()
 
+class __playing_cards(object):
+    suits  = ["Spades", "Hearts", "Clubs", "Diamonds"]
+    images = Image.open('materials/playing-cards.png')
+    names  = { 1: "Ace", 11: "Jack", 12: "Queen", 13:"King"}
+    poker_hands = {
+         1: {"en": "High Card", "jp": "ノーペア"},
+         2: {"en": "One Pair", "jp": "ワンペア"},
+         3: {"en": "Two Pair", "jp": "ツーペア"},
+         4: {"en": "Three of a Kind", "jp": "スリーカード"},
+         5: {"en": "Straight", "jp": "ストレート"},
+         6: {"en": "Flush", "jp": "フラッシュ"},
+         7: {"en": "Full House", "jp": "フルハウス"},
+         8: {"en": "Four of a Kind", "jp": "フォーカード"},
+         9: {"en": "Straight Flush", "jp": "ストレートフラッシュ"},
+        10: {"en": "Royal Flush", "jp": "ロイヤルストレートフラッシュ"},
+        11: {"en": "Five of a Kind", "jp": "ファイブカード"}
+    }
+
+    @property
+    def cards(self):
+        return [(suit, number) for suit in self.suits for number in range(1,14)]
+
+
+
+playing_cards = __playing_cards()
 
 def load(filename):
     with open(filename, 'r') as f:

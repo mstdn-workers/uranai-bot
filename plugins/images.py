@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
-from plugins import resources, tarot
+from plugins import resources, tarot, playing
 
 
 def concat(image_list):
@@ -70,4 +70,9 @@ def create_triple_tarot_image(cards):
     image = bgcolor(set_size(image, resources.canvas_size), resources.bg_color)
     return image
 
+def create_playing_card_image(cards):
+    image = concat([card.image for card in playing.Deck.sort(cards)])
+    image = set_size(image, (420, 280))
+    image = bgcolor(image, (38, 75, 31))
+    return image
 
