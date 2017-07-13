@@ -204,10 +204,11 @@ class PokerHand(object):
     @classmethod
     def create_point(cls, cards):
         point, pair_set = cls.__check_hand(cards)
-        numbers = [ n for n,c in sorted(pair_set, key=lambda p: p[1]*100 + (14 if p[0] == 1 else p[0]), reverse=True)]
+        weak_ace  = max([ n for n,c in pair_set ]) == 5 and cls.is_straight(cards)
+        numbers = [ n for n,c in sorted(pair_set, key=lambda p: p[1]*100 + (14 if p[0] == 1 and not weak_ace else p[0]), reverse=True)]
         for n in range(5):
             p = numbers[n] if len(numbers) > n else 0
-            p = 14 if p == 1 else p
+            p = 14 if p == 1 and not weak_ace else p
             point = point * 100 + p
         point = point * 100 + (0 if any([ card.is_joker for card in cards]) else 1)
         return point
