@@ -91,7 +91,7 @@ def casino_playing_card_poker_rank(message):
         groups = groupby(data, key=lambda c: int(c["point"]))
         nstr = { 1:"st", 2:"nd", 3:"rd"}
         help.update((
-            (str(i+1),", ".join([ "{0} ({1}) [{2} trial]".format(
+            (str(i+1),", ".join([ "{0} ({1}) [{2}]".format(
                 api.get_username(data["user"]),
                 resources.playing_cards.poker_hands[playing.PokerHand.point_to_hand(gs[0])]["jp"],
                 str(data["count"][1]) + nstr.get(data["count"][1], "th")
