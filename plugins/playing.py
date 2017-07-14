@@ -139,14 +139,14 @@ class PokerHand(object):
             pair_set = cls.pairs(cards)
             pairs = [c for n, c in pair_set]
             if pairs[0] == 4:
-                return 11, pair_set
+                return 11, pair_set, cards
             magic_cards = Deck(shuffled=False, use_joker=False).cards
-            m = max([ cls.__check_hands_without_joker(cards + [j]) for j in magic_cards], key=lambda s:s[0])
+            m = max([ cls.__check_hands_without_joker(cards + [j]) for j in magic_cards], key=lambda s:cls.create_point(s[2]))
             return m
         else:
             jokers.pop()
             magic_cards = Deck(shuffled=False, use_joker=False).cards
-            return max([ cls.__check_hands_with_jokers(cards + [j], jokers) for j in magic_cards], key=lambda s:s[0])
+            return max([ cls.__check_hands_with_jokers(cards + [j], jokers) for j in magic_cards], key=lambda s:cls.create_point(s[2]))
 
 
     @classmethod
@@ -157,24 +157,24 @@ class PokerHand(object):
         pair_set = cls.pairs(cards)
         pairs    = [c for n,c in pair_set]
         if ligh_straight and flush:
-            return 10, pair_set
+            return 10, pair_set, cards
         if straight and flush:
-            return  9, pair_set
+            return  9, pair_set, cards
         if pairs[0] == 4:
-            return  8, pair_set
+            return  8, pair_set, cards
         if pairs[0] == 3 and len(pairs) == 2:
-            return  7, pair_set
+            return  7, pair_set, cards
         if flush:
-            return  6, pair_set
+            return  6, pair_set, cards
         if straight:
-            return  5, pair_set
+            return  5, pair_set, cards
         if pairs[0] == 3:
-            return  4, pair_set
+            return  4, pair_set, cards
         if pairs[0] == 2 and len(pairs) == 3:
-            return  3, pair_set
+            return  3, pair_set, cards
         if pairs[0] == 2:
-            return  2, pair_set
-        return 1, pair_set
+            return  2, pair_set, cards
+        return 1, pair_set, cards
 
     @classmethod
     def pairs(cls, cards):
@@ -203,7 +203,7 @@ class PokerHand(object):
 
     @classmethod
     def create_point(cls, cards):
-        point, pair_set = cls.__check_hand(cards)
+        point, pair_set, dummy = cls.__check_hand(cards)
         weak_ace  = max([ n for n,c in pair_set ]) == 5 and cls.is_straight(cards)
         numbers = [ n for n,c in sorted(pair_set, key=lambda p: p[1]*100 + (14 if p[0] == 1 and not weak_ace else p[0]), reverse=True)]
         for n in range(5):
