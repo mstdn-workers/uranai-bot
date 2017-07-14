@@ -47,10 +47,26 @@ def only_today(data, message):
 def add_ranking(key, message, point, data):
     cache = only_today(load_cache(key), message)
     users_data = [d for d in cache if d["user"] == message.body["user"]]
-    if users_data and users_data[0]["point"] > point:
-        return
+
+    cnt = 1
+    display_cnt = 1
+    if users_data:
+        cnt = users_data[0]["count"][0] + 1
+        if point > users_data[0]["point"]:
+            display_cnt = cnt
+        else:
+            point = users_data[0]["point"]
+            data  = users_data[0]["data"]
+            display_cnt = users_data[0]["count"][1]
+
     cache = [d for d in cache if d["user"] != message.body["user"]]
-    cache.append({"user": message.body["user"], "point": point, "ts": message.body["ts"], "data": data})
+    cache.append({
+        "user"  : message.body["user"],
+        "point" : point,
+        "ts"    : message.body["ts"],
+        "data"  : data,
+        "count" : [ cnt, display_cnt ]
+    })
     save_cache(key, cache)
 
 def get_ranking(key, message):
