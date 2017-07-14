@@ -89,12 +89,11 @@ def casino_playing_card_poker_rank(message):
         help = OrderedDict()
         data   = sorted(cache.get_ranking("poker", message), key=lambda c: int(c["point"]), reverse=True)
         groups = groupby(data, key=lambda c: int(c["point"]))
-        nstr = { 1:"st", 2:"nd", 3:"rd"}
         help.update((
             (str(i+1),", ".join([ "{0} ({1}) [{2}]".format(
                 api.get_username(data["user"]),
                 resources.playing_cards.poker_hands[playing.PokerHand.point_to_hand(gs[0])]["jp"],
-                str(data["count"][1]) + nstr.get(data["count"][1], "th")
+                data["count"][1]
             ) for data in gs[1] ])) for i, gs in enumerate(groups)
         ))
         message.send(create_help_message(help, break_line=False, show_mao=False))
