@@ -2,6 +2,7 @@ from slackbot.bot import respond_to, listen_to
 from plugins import tarot, images, mode, cache, api, playing, resources
 from collections import OrderedDict
 from itertools import groupby
+import random
 
 
 cmd = lambda command: r'{0}{1}\s*$'.format(mode.test_prefix, command)
@@ -114,6 +115,24 @@ def casino_playing_cards(message, count):
             message.send("素敵なジョークです。")
         else:
             message.send("すみません、5枚までになっております。")
+
+@listen_to(cmd("joker"))
+def casino_playing_cards_joker(message):
+    if mode.card:
+        deck = playing.Deck()
+        card = deck.pick_joker()
+        image = images.create_playing_card_image([card])
+        filename = "joker.png"
+        title = "ジョーカー"
+        comment = None
+        api.post_image(message, image, title=title, comment=comment, file_name=filename)
+        message.send("どうぞ")
+
+@listen_to(cmd("porker"))
+def casino_playing_cards_joker(message):
+    if mode.card:
+        oink = random.choice(["ぶぅ", "ぶーぶー", "ぶひ〜", "ブヒブヒ", "おいんくおいんく"])
+        message.send(":piggy: < ぶひ〜")
 
 
 def drawn_cards_exists(deck, message):
