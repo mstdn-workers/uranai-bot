@@ -143,7 +143,7 @@ def casino_playing_cards_joker(message):
 def casino_playing_cards_joker(message):
     if mode.card:
         oink = random.choice(["ぶぅ", "ぶーぶー", "ぶひ〜", "ブヒブヒ", "おいんくおいんく"])
-        message.send(":piggy: < ぶひ〜")
+        message.send(":piggy: < " + oink)
 
 @listen_to(cmd("porker rank"))
 def casino_playing_cards_joker(message):
