@@ -203,8 +203,8 @@ class PokerHand(object):
 
     @classmethod
     def create_point(cls, cards):
-        point, pair_set, dummy = cls.__check_hand(cards)
-        weak_ace  = max([ n for n,c in pair_set ]) == 5 and cls.is_straight(cards)
+        point, pair_set, provisional_cards = cls.__check_hand(cards)
+        weak_ace  = max([ n for n,c in pair_set ]) == 5 and cls.is_straight(provisional_cards)
         numbers = [ n for n,c in sorted(pair_set, key=lambda p: p[1]*100 + (14 if p[0] == 1 and not weak_ace else p[0]), reverse=True)]
         for n in range(5):
             p = numbers[n] if len(numbers) > n else 0
