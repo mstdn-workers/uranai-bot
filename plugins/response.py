@@ -100,6 +100,17 @@ def casino_playing_card_poker_rank(message):
         message.send(create_help_message(help, break_line=False, show_mao=False))
 
 
+@listen_to(cmd("poker help"))
+def casino_playing_cards_joker(message):
+    if mode.card:
+        help = OrderedDict()
+        help.update((
+            ("poker", "ポーカーで勝負です。"),
+            ("poker rank", "その日のランキングを表示します。\n\n[ランキング表示]\nランク: プレイヤー (役) [試行回数]"),
+        ))
+        message.send(create_help_message(help, break_line=True, show_mao=False))
+
+
 @listen_to(cmd("deal a card"))
 def casino_playing_card_one(message):
     if mode.card:
@@ -133,6 +144,24 @@ def casino_playing_cards_joker(message):
     if mode.card:
         oink = random.choice(["ぶぅ", "ぶーぶー", "ぶひ〜", "ブヒブヒ", "おいんくおいんく"])
         message.send(":piggy: < ぶひ〜")
+
+@listen_to(cmd("porker rank"))
+def casino_playing_cards_joker(message):
+    if mode.card:
+        help = OrderedDict()
+        help.update((
+            ("1", "黒豚"),
+            ("2", "平牧三元豚"),
+            ("3", "白金豚"),
+            ("4", "TOKYO X"),
+            ("5", "あぐー豚"),
+            ("6", "イベリコ豚"),
+            ("7", "金華豚"),
+            ("8", "梅山豚"),
+            ("9", "ヨークシャー"),
+            ("10", "牡丹肉"),
+        ))
+        message.send(create_help_message(help, break_line=False, show_mao=False))
 
 
 def drawn_cards_exists(deck, message):
