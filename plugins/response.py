@@ -89,6 +89,9 @@ def casino_playing_card_poker_rank(message):
     if mode.card:
         help = OrderedDict()
         data   = sorted(cache.get_ranking("poker", message), key=lambda c: int(c["point"]), reverse=True)
+        if len(data) < 1:
+            message.send("いまならあなたが一位になれますよ！")
+            return
         groups = groupby(data, key=lambda c: int(c["point"]))
         help.update((
             (str(i+1),", ".join([ "{0} ({1}) [{2}]".format(
