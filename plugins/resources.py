@@ -63,6 +63,7 @@ position     = __position()
 
 class __playing_cards(object):
     suits  = ["Spades", "Hearts", "Clubs", "Diamonds"]
+    power_of_suit = {"Spades":3, "Hearts" :2, "Diamonds":1, "Clubs":0}
     images = Image.open('materials/playing-cards.png')
     names  = { 1: "Ace", 11: "Jack", 12: "Queen", 13:"King"}
     poker_hands = {
