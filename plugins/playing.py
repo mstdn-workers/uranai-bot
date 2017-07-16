@@ -211,10 +211,11 @@ class PokerHand(object):
             p = 14 if p == 1 and not weak_ace else p
             point = point * 100 + p
         point = point * 100 + (0 if any([ card.is_joker for card in cards]) else 1)
-        if cls.is_flush(provisional_cards):
-            point += resources.playing_cards.power_of_suit[provisional_cards[0].suit] * (10**11)
-            if all([ not card.is_joker for card in cards]) and not cls.is_straight(provisional_cards):
-                point += 4 * (10**11)
+        if False:
+            if cls.is_flush(provisional_cards):
+                point += resources.playing_cards.power_of_suit[provisional_cards[0].suit] * (10**11)
+                if all([ not card.is_joker for card in cards]) and not cls.is_straight(provisional_cards):
+                    point += 4 * (10**11)
         return point
 
     @classmethod
