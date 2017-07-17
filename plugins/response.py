@@ -1,5 +1,5 @@
 from slackbot.bot import respond_to, listen_to
-from plugins import tarot, images, mode, cache, api, playing, resources
+from plugins import tarot, images, mode, cache, api, playing, resources, log
 from collections import OrderedDict
 from itertools import groupby
 import random
@@ -9,6 +9,8 @@ cmd = lambda command: r'{0}{1}\s*$'.format(mode.test_prefix, command)
 
 @listen_to(cmd("tarot"))
 def fortune_tarot(message):
+    if mode.debug:
+        log.write(message)
     if mode.uranai:
         deck  = tarot.Deck(shuffled=True)
         title = ""
@@ -24,6 +26,8 @@ def fortune_tarot(message):
 
 @listen_to(cmd("tarot 3"))
 def fortune_tarot_3(message):
+    if mode.debug:
+        log.write(message)
     if mode.uranai:
         deck  = tarot.Deck(shuffled=True)
         cards = deck.draw_cards(deck.major_arcanas, 3)
@@ -37,6 +41,8 @@ def fortune_tarot_3(message):
 
 @listen_to(cmd("tarot ([a-zA-Z\s]+)"))
 def fortune_tarot_name(message, name):
+    if mode.debug:
+        log.write(message)
     if mode.uranai:
         deck  = tarot.Deck(shuffled=False)
         cards = deck.pick_by_names(deck.major_arcanas + deck.minor_arcanas, [name])
@@ -53,6 +59,8 @@ def fortune_tarot_name(message, name):
 
 @listen_to(cmd("tarot help"))
 def fortune_tarot_help(message):
+    if mode.debug:
+        log.write(message)
     if mode.uranai:
         help = OrderedDict()
         help.update((
@@ -66,6 +74,8 @@ def fortune_tarot_help(message):
 
 @listen_to(cmd("tarot names"))
 def fortune_tarot_names(message):
+    if mode.debug:
+        log.write(message)
     if mode.uranai:
         help = OrderedDict()
         deck = tarot.Deck(shuffled=False)
@@ -77,6 +87,8 @@ def fortune_tarot_names(message):
 
 @listen_to(cmd("poker"))
 def casino_playing_card_poker(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         cards = deal_cards(message, 5, shuffled=True, use_joker=1)
         cache.add_ranking("poker", message, playing.PokerHand.create_point(cards), playing.PokerHand.open(cards))
@@ -86,6 +98,8 @@ def casino_playing_card_poker(message):
 
 @listen_to(cmd("poker rank"))
 def casino_playing_card_poker_rank(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         help = OrderedDict()
         data   = sorted(cache.get_ranking("poker", message), key=lambda c: int(c["point"]), reverse=True)
@@ -105,6 +119,8 @@ def casino_playing_card_poker_rank(message):
 
 @listen_to(cmd("poker help"))
 def casino_playing_cards_joker(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         help = OrderedDict()
         help.update((
@@ -116,11 +132,15 @@ def casino_playing_cards_joker(message):
 
 @listen_to(cmd("deal a card"))
 def casino_playing_card_one(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         deal_cards(message, 1)
 
 @listen_to(cmd("deal ([0-9]+) cards?"))
 def casino_playing_cards(message, count):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         count = int(count)
         if 1 <= count <= 5:
@@ -132,6 +152,8 @@ def casino_playing_cards(message, count):
 
 @listen_to(cmd("joker"))
 def casino_playing_cards_joker(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         deck = playing.Deck()
         card = deck.pick_joker()
@@ -144,12 +166,16 @@ def casino_playing_cards_joker(message):
 
 @listen_to(cmd("porker"))
 def casino_playing_cards_joker(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         oink = random.choice(["ぶぅ", "ぶーぶー", "ぶひ〜", "ブヒブヒ", "おいんくおいんく"])
         message.send(":piggy: < " + oink)
 
 @listen_to(cmd("porker rank"))
 def casino_playing_cards_joker(message):
+    if mode.debug:
+        log.write(message)
     if mode.card:
         help = OrderedDict()
         help.update((

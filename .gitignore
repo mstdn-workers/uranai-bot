@@ -3,6 +3,8 @@ __pycache__/
 tests/
 .token*
 .dev
+.debug
 .card
 .sushi
 cache/
+logs/
