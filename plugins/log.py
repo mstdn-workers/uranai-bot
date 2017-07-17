@@ -1,9 +1,11 @@
-import json
 import os.path
 from datetime import datetime
-from plugins import api
+from plugins import api, mode
 
 def write(message):
+    if not mode.debug:
+        return
+
     log = [
         "{0:%Y-%m-%d %H:%M:%S}".format(datetime.fromtimestamp(float(message.body["ts"]))),
         message.body["channel"],
