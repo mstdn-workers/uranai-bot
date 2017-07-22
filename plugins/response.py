@@ -67,6 +67,7 @@ def fortune_tarot_help(message):
             ("tarot", "１枚のカードを引きます。"),
             ("tarot 3", "過去・現在・未来を表す３枚のカードを引きます。"),
             ("tarot help", "ヘルプを表示します。"),
+            ("tarot help mao", "まおーヘルプを表示します。"),
             ("tarot [name]", "[name]のカードを表示します。"),
             ("tarot names", "カードの名前を一覧表示します。"),
         ))
@@ -85,6 +86,15 @@ def fortune_tarot_names(message):
         ))
         message.send(create_help_message(help, break_line=False))
         lead_user_to_channels(message)
+
+@listen_to(cmd("tarot help mao"))
+def fortune_tarot_help_mao(message):
+    if mode.uranai:
+        mao_help = api.get_message(slackbot_settings.CHANNEL_TAROT, "1500304822.076050")
+        if mao_help:
+            message.send(create_pre_message(mao_help["text"], show_mao=True))
+            lead_user_to_channels(message)
+
 
 @listen_to(cmd("poker"))
 def casino_playing_card_poker(message):
@@ -200,10 +210,14 @@ def drawn_cards_exists(deck, message):
         return True
     return False
 
+def create_pre_message(text, show_mao=True):
+    mao = "　:speech_balloon:\n:mao_rev:" if show_mao else ""
+    return "```" + text + "\n```" + mao
+
 def create_help_message(help, break_line=False, show_mao=True):
     delimiter = "\n" if break_line else " "
-    mao       = "　:speech_balloon:\n:mao_rev:" if show_mao else ""
-    return "```" + "\n".join(["{0}:{2}{1}".format(cmd, desc, delimiter) for cmd,desc in help.items() ]) + "\n```" + mao
+    help_message = "\n".join(["{0}:{2}{1}".format(cmd, desc, delimiter) for cmd,desc in help.items() ])
+    return create_pre_message(help_message, show_mao=show_mao)
 
 def deal_cards(message, count, shuffled=True, use_joker=1):
     deck = playing.Deck(shuffled=shuffled, use_joker=use_joker)

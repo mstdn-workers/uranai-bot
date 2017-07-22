@@ -1,9 +1,9 @@
 import io
 import os.path
 import re
-import requests
 import slackbot_settings
 from slacker import Slacker
+
 
 slackapi = Slacker(slackbot_settings.API_TOKEN)
 
@@ -14,6 +14,14 @@ def get_user(user_id):
 def get_channel(channel_id):
     response = slackapi.channels.info(channel_id)
     return response.body["channel"]
+
+def get_message(channel_id, ts):
+    latest = str(float(ts) + 0.000001)
+    oldest = str(float(ts) - 0.000001)
+    response = slackapi.channels.history(channel=channel_id, latest=latest, oldest=oldest, count=1)
+    if response.body["messages"]:
+        return response.body["messages"][0]
+    return None
 
 def get_user_mame(user_id):
     emoji = re.compile(r":.+?:")
