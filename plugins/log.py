@@ -9,7 +9,7 @@ def write(message):
     log = [
         "{0:%Y-%m-%d %H:%M:%S}".format(datetime.fromtimestamp(float(message.body["ts"]))),
         message.body["channel"],
-        "[{0}]: {1}".format(api.get_username(message.body["user"]), message.body["text"])
+        "[{0}]: {1}".format(api.get_user_mame(message.body["user"]), message.body["text"])
     ]
     if not os.path.exists("logs"):
         os.makedirs("logs")

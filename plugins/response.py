@@ -3,6 +3,7 @@ from plugins import tarot, images, mode, cache, api, playing, resources, log
 from collections import OrderedDict
 from itertools import groupby
 import random
+import slackbot_settings
 
 
 cmd = lambda command: r'{0}{1}\s*$'.format(mode.test_prefix, command)
@@ -14,7 +15,7 @@ def fortune_tarot(message):
         deck  = tarot.Deck(shuffled=True)
         title = ""
         if drawn_cards_exists(deck, message):
-            message.send("今の *" + api.get_username(message.body["user"]) + "* さんに必要なキーカードはこちらです。")
+            message.send("今の *" + api.get_user_mame(message.body["user"]) + "* さんに必要なキーカードはこちらです。")
             title += "キーカード: "
         card  = deck.draw_one(deck.major_arcanas)
         image = images.create_single_tarot_image(card)
@@ -22,6 +23,7 @@ def fortune_tarot(message):
         comment  = "*{0}*\n{1}".format("キーワード", card.keywords)
         filename = 'tarot_{0}{1}.png'.format(card.name["en"], '_reversed' if card.reversed else '')
         api.post_image(message, image, title=title, comment=comment, file_name=filename)
+        lead_user_to_channels(message)
 
 @listen_to(cmd("tarot 3"))
 def fortune_tarot_3(message):
@@ -36,6 +38,7 @@ def fortune_tarot_3(message):
         filename = 'tarot_three.png'
         api.post_image(message, image, title=title, comment=comments, file_name=filename)
         cache.add("uranai", message, [ card.name for card in cards ])
+        lead_user_to_channels(message)
 
 @listen_to(cmd("tarot ([a-zA-Z\s]+)"))
 def fortune_tarot_name(message, name):
@@ -53,6 +56,7 @@ def fortune_tarot_name(message, name):
             "*{0}*\n{1}".format("逆位置のキーワード", card.get_keywords(reversed=True))]) if card.keywords else None
         filename = 'tarot_{0}.png'.format(card.name["en"])
         api.post_image(message, image, title=title, comment=comment, file_name=filename)
+        lead_user_to_channels(message)
 
 @listen_to(cmd("tarot help"))
 def fortune_tarot_help(message):
@@ -67,6 +71,7 @@ def fortune_tarot_help(message):
             ("tarot names", "カードの名前を一覧表示します。"),
         ))
         message.send(create_help_message(help, break_line=True))
+        lead_user_to_channels(message)
 
 @listen_to(cmd("tarot names"))
 def fortune_tarot_names(message):
@@ -79,6 +84,7 @@ def fortune_tarot_names(message):
             for card in deck.major_arcanas
         ))
         message.send(create_help_message(help, break_line=False))
+        lead_user_to_channels(message)
 
 @listen_to(cmd("poker"))
 def casino_playing_card_poker(message):
@@ -89,6 +95,7 @@ def casino_playing_card_poker(message):
         msg = get_message_for_poker(playing.PokerHand.open(cards))
         if msg:
             message.send(msg)
+        lead_user_to_channels(message)
 
 @listen_to(cmd("poker rank"))
 def casino_playing_card_poker_rank(message):
@@ -102,12 +109,13 @@ def casino_playing_card_poker_rank(message):
         groups = groupby(data, key=lambda c: int(c["point"]))
         help.update((
             (str(i+1),", ".join([ "{0} ({1}) [{2}]".format(
-                api.get_username(data["user"]),
+                api.get_user_mame(data["user"]),
                 resources.playing_cards.poker_hands[playing.PokerHand.point_to_hand(gs[0])]["jp"],
                 data["count"][1]
             ) for data in gs[1] ])) for i, gs in enumerate(groups)
         ))
         message.send(create_help_message(help, break_line=False, show_mao=False))
+        lead_user_to_channels(message)
 
 
 @listen_to(cmd("poker help"))
@@ -120,12 +128,14 @@ def casino_playing_cards_joker(message):
             ("poker rank", "その日のランキングを表示します。\n\n[ランキング表示]\nランク: プレイヤー (役) [試行回数]"),
         ))
         message.send(create_help_message(help, break_line=True, show_mao=False))
+        lead_user_to_channels(message)
 
 
 @listen_to(cmd("deal a card"))
 def casino_playing_card_one(message):
     if mode.card:
         deal_cards(message, 1)
+        lead_user_to_channels(message)
 
 @listen_to(cmd("deal ([0-9]+) cards?"))
 def casino_playing_cards(message, count):
@@ -138,6 +148,7 @@ def casino_playing_cards(message, count):
             message.send("素敵なジョークです。")
         else:
             message.send("すみません、5枚までになっております。")
+        lead_user_to_channels(message)
 
 @listen_to(cmd("joker"))
 def casino_playing_cards_joker(message):
@@ -151,6 +162,7 @@ def casino_playing_cards_joker(message):
         comment = None
         api.post_image(message, image, title=title, comment=comment, file_name=filename)
         message.send("どうぞ")
+        lead_user_to_channels(message)
 
 @listen_to(cmd("porker"))
 def casino_playing_cards_joker(message):
@@ -158,6 +170,7 @@ def casino_playing_cards_joker(message):
         log.write(message)
         oink = random.choice(["ぶぅ", "ぶーぶー", "ぶひ〜", "ブヒブヒ", "おいんくおいんく"])
         message.send(":piggy: < " + oink)
+        lead_user_to_channels(message)
 
 @listen_to(cmd("porker rank"))
 def casino_playing_cards_joker(message):
@@ -177,6 +190,7 @@ def casino_playing_cards_joker(message):
             ("10", "牡丹肉"),
         ))
         message.send(create_help_message(help, break_line=False, show_mao=False))
+        lead_user_to_channels(message)
 
 
 def drawn_cards_exists(deck, message):
@@ -196,7 +210,7 @@ def deal_cards(message, count, shuffled=True, use_joker=1):
     cards = deck.draw_cards(count)
     image = images.create_playing_card_image(cards)
     filename = "playing_cards.png"
-    title = api.get_username(message.body["user"]) + "さんの手札"
+    title = api.get_user_mame(message.body["user"]) + "さんの手札"
     comment = None
     api.post_image(message, image, title=title, comment=comment, file_name=filename)
     return cards
@@ -213,3 +227,13 @@ def get_message_for_poker(hand):
     if hand in {"ツーペア", "ワンペア"}:
         return "{0}ですね。".format(hand)
     return None
+
+def lead_user_to_channels(message):
+    if message.body["channel"] in [slackbot_settings.CHANNEL_GENERAL]:
+        channel = None
+        if mode.uranai:
+            channel = slackbot_settings.CHANNEL_TAROT
+        elif mode.card:
+            channel = slackbot_settings.CHANNEL_POKER
+        if channel:
+            message.send("つづきは {0} でどうぞ！".format(api.get_channel_tag(channel)))

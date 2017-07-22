@@ -24,6 +24,9 @@ def get_channel_name(channel_id):
     channel = get_channel(channel_id)
     return channel["name"]
 
+def get_channel_tag(channel_id):
+    return "<#{0}|{1}>".format(channel_id, get_channel_name(channel_id))
+
 def post_image(message, pillow_image, title=None, comment=None, file_name=None):
     def filename_to_filetype(file_name):
         root, ext = os.path.splitext(file_name or 'sample.png')
