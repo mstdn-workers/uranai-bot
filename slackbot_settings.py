@@ -10,7 +10,7 @@ def read_token():
     return token.strip()
 
 API_TOKEN = read_token()
-DEFAULT_REPLY = "tarot で占ってさし上げるわ"
+DEFAULT_REPLY = "どうもこんにちは"
 ERRORS_TO = 'uranai-bot-test'
 PLUGINS = ['plugins']
 
