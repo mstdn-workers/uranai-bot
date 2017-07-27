@@ -7,6 +7,8 @@ tarot_waite = Image.open('materials/tarot-waite.png')
 canvas_size = (273,182)
 bg_color    = (248,248,248,255)
 
+playing_card_images = Image.open('materials/playing-cards.png')
+
 class __major_arcana(object):
     cards = [
             (0, "The Fool", "愚者"),
@@ -64,7 +66,7 @@ position     = __position()
 class __playing_cards(object):
     suits  = ["Spades", "Hearts", "Clubs", "Diamonds"]
     power_of_suit = {"Spades":3, "Hearts" :2, "Diamonds":1, "Clubs":0}
-    images = Image.open('materials/playing-cards.png')
+    images = playing_card_images
     names  = { 1: "Ace", 11: "Jack", 12: "Queen", 13:"King"}
     poker_hands = {
          1: {"en": "High Card", "jp": "ノーペア"},
