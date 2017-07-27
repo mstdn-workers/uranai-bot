@@ -3,6 +3,7 @@ import os.path
 import re
 import slackbot_settings
 from slacker import Slacker
+from requests import ReadTimeout
 
 
 slackapi = Slacker(slackbot_settings.API_TOKEN)
@@ -56,5 +57,9 @@ def post_image(message, pillow_image, title=None, comment=None, file_name=None):
     files = {
         "file": output.getvalue()
     }
-    slackapi.files.post('files.upload', data=data, files=files)
+    try:
+        slackapi.files.post('files.upload', data=data, files=files)
+    except ReadTimeout as e:
+        message.send("slackの調子が少し悪いみたいですね...")
+
 
