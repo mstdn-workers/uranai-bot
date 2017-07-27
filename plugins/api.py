@@ -7,9 +7,13 @@ from slacker import Slacker
 
 slackapi = Slacker(slackbot_settings.API_TOKEN)
 
+users = {}
+
 def get_user(user_id):
-    response = slackapi.users.info(user_id)
-    return response.body["user"]
+    if user_id not in users:
+        response = slackapi.users.info(user_id)
+        users[user_id] = response.body["user"]
+    return users[user_id]
 
 def get_channel(channel_id):
     response = slackapi.channels.info(channel_id)
