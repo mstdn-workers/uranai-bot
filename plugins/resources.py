@@ -8,6 +8,7 @@ canvas_size = (273,182)
 bg_color    = (248,248,248,255)
 
 playing_card_images = Image.open('materials/playing-cards.png')
+poker_help_images   = Image.open('materials/poker-help.png')
 
 class __major_arcana(object):
     cards = [

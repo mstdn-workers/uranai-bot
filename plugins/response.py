@@ -202,6 +202,13 @@ def casino_playing_cards_joker(message):
         message.send(create_help_message(help, break_line=False, show_mao=False))
         lead_user_to_channels(message)
 
+@listen_to(cmd("porker help"))
+def casino_playing_cards_joker(message):
+    if mode.card:
+        n = random.randint(0,5)
+        image = resources.poker_help_images.crop((0 + 320 * n, 0, 0 + 320 * (n + 1), 170))
+        api.post_image(message, image, title="porkerより", comment=None, file_name="poker_help.png")
+
 
 def drawn_cards_exists(deck, message):
     prev_card_names = cache.get("uranai", message)
