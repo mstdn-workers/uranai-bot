@@ -129,7 +129,7 @@ def casino_playing_card_poker_rank(message):
 
 
 @listen_to(cmd("poker help"))
-def casino_playing_cards_joker(message):
+def casino_playing_cards_poker_help(message):
     if mode.card:
         log.write(message)
         help = OrderedDict()
