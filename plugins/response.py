@@ -175,7 +175,7 @@ def casino_playing_cards_joker(message):
         lead_user_to_channels(message)
 
 @listen_to(cmd("porker"))
-def casino_playing_cards_joker(message):
+def casino_playing_cards_porker(message):
     if mode.card:
         log.write(message)
         oink = random.choice(["ぶぅ", "ぶーぶー", "ぶひ〜", "ブヒブヒ", "おいんくおいんく"])
@@ -183,7 +183,7 @@ def casino_playing_cards_joker(message):
         lead_user_to_channels(message)
 
 @listen_to(cmd("porker rank"))
-def casino_playing_cards_joker(message):
+def casino_playing_cards_porker2(message):
     if mode.card:
         log.write(message)
         help = OrderedDict()
@@ -203,7 +203,7 @@ def casino_playing_cards_joker(message):
         lead_user_to_channels(message)
 
 @listen_to(cmd("porker help"))
-def casino_playing_cards_joker(message):
+def casino_playing_cards_porker3(message):
     if mode.card:
         n = random.randint(0,5)
         image = resources.poker_help_images.crop((0 + 320 * n, 0, 0 + 320 * (n + 1), 170))
