@@ -238,10 +238,14 @@ def deal_cards(message, count, shuffled=True, use_joker=1):
 
 def get_message_for_poker(hand):
     if hand in {"ファイブカード"}:
-        return "これはまさかの、{0}・・・".format(hand)
+        return "こ、これはまさかの、{0}・・・".format(hand)
     if hand in {"ロイヤルストレートフラッシュ"}:
+        return "なんと美しい、{0}ではありませんか！".format(hand)
+    if hand in {"ストレートフラッシュ"}:
         return "ほう、{0}、これは素晴らしい！".format(hand)
-    if hand in {"ストレートフラッシュ", "フォーカード", "フルハウス"}:
+    if hand in {"フォーカード"}:
+        return "ふむふむ、{0}ですか、実にお見事。".format(hand)
+    if hand in {"フルハウス"}:
         return "ふむ、{0}ですか、お見事。".format(hand)
     if hand in {"フラッシュ", "ストレート", "スリーカード"}:
         return "{0}ですね、なかなか。".format(hand)
