@@ -44,7 +44,7 @@ def only_today(data, message):
     zero = datetime(now.year, now.month, now.day, 0, 0, 0)
     return [d for d in data if datetime.fromtimestamp(float(d["ts"])) >= zero]
 
-def add_ranking(key, message, point, data):
+def add_ranking(key, message, point, data, cheated=False):
     cache = only_today(load_cache(key), message)
     users_data = [d for d in cache if d["user"] == message.body["user"]]
 
@@ -58,15 +58,19 @@ def add_ranking(key, message, point, data):
             point = users_data[0]["point"]
             data  = users_data[0]["data"]
             display_cnt = users_data[0]["count"][1]
+            cheated = users_data[0]["cheated"]
 
     cache = [d for d in cache if d["user"] != message.body["user"]]
-    cache.append({
+    rank_data = {
         "user"  : message.body["user"],
         "point" : point,
         "ts"    : message.body["ts"],
         "data"  : data,
         "count" : [ cnt, display_cnt ]
-    })
+    }
+    if cheated:
+        rank_data["cheated"] = "yes"
+    cache.append(rank_data)
     save_cache(key, cache)
 
 def get_ranking(key, message):

@@ -118,10 +118,11 @@ def casino_playing_card_poker_rank(message):
             return
         groups = groupby(data, key=lambda c: int(c["point"]))
         help.update((
-            (str(i+1),", ".join([ "{0} ({1}) [{2}]".format(
+            (str(i+1),", ".join([ "{0} ({1}) [{2}]{3}".format(
                 api.get_user_mame(data["user"]),
                 resources.playing_cards.poker_hands[playing.PokerHand.point_to_hand(gs[0])]["jp"],
-                data["count"][1]
+                data["count"][1],
+                " (cheated)" if "cheated" in data else ""
             ) for data in gs[1] ])) for i, gs in enumerate(groups)
         ))
         message.send(create_help_message(help, break_line=False, show_mao=False))
@@ -172,6 +173,20 @@ def casino_playing_cards_joker(message):
         comment = None
         api.post_image(message, image, title=title, comment=comment, file_name=filename)
         message.send("どうぞ")
+        lead_user_to_channels(message)
+
+@listen_to(cmd("poker.+cheat"))
+def casino_playing_card_poker_cheat(message):
+    if mode.card:
+        log.write(message)
+        cards = [ playing.Deck().pick_joker() for n in range(5) ]
+        image = images.create_playing_card_image(cards)
+        filename = "playing_cards.png"
+        title = api.get_user_mame(message.body["user"]) + "さんの手札"
+        comment = None
+        api.post_image(message, image, title=title, comment=comment, file_name=filename)
+        cache.add_ranking("poker", message, 100000000000001, "ファイブジョーカー", cheated=True)
+        message.send("ふぁ、ふぁいぶじょーかー！？これはいったい・・・")
         lead_user_to_channels(message)
 
 @listen_to(cmd("porker"))

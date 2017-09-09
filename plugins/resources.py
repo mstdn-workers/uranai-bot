@@ -80,7 +80,10 @@ class __playing_cards(object):
          8: {"en": "Four of a Kind", "jp": "フォーカード"},
          9: {"en": "Straight Flush", "jp": "ストレートフラッシュ"},
         10: {"en": "Royal Flush", "jp": "ロイヤルストレートフラッシュ"},
-        11: {"en": "Five of a Kind", "jp": "ファイブカード"}
+        11: {"en": "Five of a Kind", "jp": "ファイブカード"},
+
+        # cheat
+        100: {"en": "Five of a Joker", "jp": "ファイブジョーカー"}
     }
 
     @property
