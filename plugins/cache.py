@@ -58,7 +58,8 @@ def add_ranking(key, message, point, data, cheated=False):
             point = users_data[0]["point"]
             data  = users_data[0]["data"]
             display_cnt = users_data[0]["count"][1]
-            cheated = users_data[0]["cheated"]
+            if "cheated" in users_data[0]:
+                cheated = users_data[0]["cheated"]
 
     cache = [d for d in cache if d["user"] != message.body["user"]]
     rank_data = {
